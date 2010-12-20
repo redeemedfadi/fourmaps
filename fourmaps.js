@@ -71,13 +71,14 @@ function loadTips(item,marker){
   var url = "https://api.foursquare.com/v2/venues/"+item.id+"/tips?oauth_token="+token;
   console.log(url);
   $.get(url, function(resp){
-    var text = "";
+    var text = "<h3>"+item.name+"</h3>";
     var items = resp.response.tips.items;
     for(var i=0;i<items.length;i++){
       var tip = items[i];
-      text += "<img alt='"+tip.user.firstName+"' src='"+tip.user.photo+"' />";
-      text += tip.text + "<br />";
+      text += "<div class='tip'><img class='profile' alt='"+tip.user.firstName+"' src='"+tip.user.photo+"' />";
+      text += tip.text + "</div>";
     }
+    if(items.length == 0) text += "No Tips For this Location";
     var infowindow = new google.maps.InfoWindow({ content: text });
     google.maps.event.addListener(marker, 'click', function() {
       infowindow.open(map,marker);
