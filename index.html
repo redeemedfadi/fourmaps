@@ -12,6 +12,7 @@ var directionDisplay;
 var directionsService = new google.maps.DirectionsService();
 var map;
 var route;
+var response;
 var markerArray = [];
 
 function initialize() {
@@ -41,27 +42,51 @@ function calcRoute() {
       var steps = Math.floor(paths.length/10);
       for(var i=0;i < paths.length/steps ;i++){
         markerArray[i] = paths[i*steps];
-        console.log(paths[i*steps]);
-        var marker = new google.maps.Marker({
-          position: paths[i*steps],
-          map: map
-        });
+        // var marker = new google.maps.Marker({
+        //   position: paths[i*steps],
+        //   map: map
+        // });
       }
+      getVenues();
+    }
+  });
+
+}
+
+function getVenues()
+{
+  var token = "PU3PIXHAQP1U201LR4F210WDL4NYZNJJPY1JJ0U2Q0Y0XSDO";
+  var latlng = markerArray[0].va + "," + markerArray[0].wa;
+  var venue = $("#venue").val();
+  var url = "https://api.foursquare.com/v2/venues/search"
+  var query = "?limit=1&query="+venue+"&ll="+latlng+"&oauth_token="+token;
+
+  console.log(url + query);
+
+  $.get(url + query,function(resp){
+    console.log(resp);
+    response = resp;
+    var items = resp.response.groups[0].items
+    for(var i=0;i < items.length; i++){
+      var location = items[i].location;
+      var marker = new google.maps.Marker({
+        position: new google.maps.LatLng(location.lat, location.lng),
+        map: map,
+        title: items[i].name
+      });
     }
   });
 }
 
-$.get("https://api.foursquare.com/v2/venues/search?ll=33.850033,-83.6500523&oauth_token=PU3PIXHAQP1U201LR4F210WDL4NYZNJJPY1JJ0U2Q0Y0XSDO",function(resp){
-  console.log(resp);
-})
 
 
 </script>
 </head>
 <body onload="initialize()">
   <div>
-    <label>From: <input id="start" type="textbox" value="Atlanta, GA"></label>
-    <label>To: <input id="end" type="textbox" value="Alpharetta, GA"></label>
+    <label>From:  <input id="start" type="textbox" value="Atlanta, GA" /></label>
+    <label>To:    <input id="end" type="textbox" value="Alpharetta, GA" /></label>
+    <label>Venue: <input id="venue" type="textbox" /></label>
     <input type="button" value="Go" onclick="calcRoute()">
   </div>
 <div id="map_canvas" style="height:90%"></div>
