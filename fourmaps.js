@@ -50,19 +50,23 @@ function getVenues()
     var latlng = markerArray[j].va + "," + markerArray[j].wa;
     var query = "?limit=1&llAcc=1000&query="+venue+"&ll="+latlng+"&oauth_token="+token;
     console.log(url + query);
-    $.get(url + query,function(resp){
-      console.log(resp);
-      response = resp;
-      items = resp.response.groups[0].items
-      for(var i=0;i < items.length; i++){
-        var location = items[i].location;
-        var marker = new google.maps.Marker({
-          position: new google.maps.LatLng(location.lat, location.lng),
-          map: map,
-          title: items[i].name
-        });
-        loadTips(items[i],marker);
-      };
+    $.ajax({
+      url: url + query,
+      dataType: 'jsonp',
+      success: function(resp){
+        console.log(resp);
+        response = resp;
+        items = resp.response.groups[0].items
+        for(var i=0;i < items.length; i++){
+          var location = items[i].location;
+          var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(location.lat, location.lng),
+            map: map,
+            title: items[i].name
+          });
+          loadTips(items[i],marker);
+        };
+      }
     });
   };
 };
@@ -70,19 +74,23 @@ function getVenues()
 function loadTips(item,marker){
   var url = "https://api.foursquare.com/v2/venues/"+item.id+"/tips?oauth_token="+token;
   console.log(url);
-  $.get(url, function(resp){
-    var text = "<h3>"+item.name+"</h3>";
-    var items = resp.response.tips.items;
-    for(var i=0;i<items.length;i++){
-      var tip = items[i];
-      text += "<div class='tip'><img class='profile' alt='"+tip.user.firstName+"' src='"+tip.user.photo+"' />";
-      text += tip.text + "</div>";
+  $.ajax({
+    url:url, 
+    dataType:'jsonp',
+    success:function(resp){
+      var text = "<h3>"+item.name+"</h3>";
+      var items = resp.response.tips.items;
+      for(var i=0;i<items.length;i++){
+        var tip = items[i];
+        text += "<div class='tip'><img class='profile' alt='"+tip.user.firstName+"' src='"+tip.user.photo+"' />";
+        text += tip.text + "</div>";
+      }
+      if(items.length == 0) text += "No Tips For this Location";
+      var infowindow = new google.maps.InfoWindow({ content: text });
+      google.maps.event.addListener(marker, 'click', function() {
+        infowindow.open(map,marker);
+      });
     }
-    if(items.length == 0) text += "No Tips For this Location";
-    var infowindow = new google.maps.InfoWindow({ content: text });
-    google.maps.event.addListener(marker, 'click', function() {
-      infowindow.open(map,marker);
-    });
   });
 };
 
