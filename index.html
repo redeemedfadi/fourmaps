@@ -16,12 +16,12 @@
 <script type="text/javascript" src="fourmaps.js"></script>
 
 </head>
-<body onload="initialize()">
+<body>
   <div>
     <label>From:  <input id="start" type="textbox" value="Atlanta, GA" /></label>
     <label>To:    <input id="end" type="textbox" value="Greenville, SC" /></label>
     <label>Venue: <input id="venue" type="textbox" value="Burger" /></label>
-    <input type="button" value="Go" onclick="calcRoute()">
+    <input id="go_button" type="button" value="Go">
   </div>
 <div id="map_canvas" style="height:90%"></div>
 
