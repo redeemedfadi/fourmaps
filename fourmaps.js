@@ -5,10 +5,10 @@ var Fourmaps = {
   route:    undefined,
   response: undefined,
   items:    undefined,
+  token :   undefined,
   mapEnabled: false,
   markerArray : new Array(),
   tableData : new Array(),
-  token : "PU3PIXHAQP1U201LR4F210WDL4NYZNJJPY1JJ0U2Q0Y0XSDO",
 
   showMap : function(){
     $("#map_canvas").show();
@@ -124,6 +124,14 @@ var Fourmaps = {
 };
 
 $(document).ready(function(){
+  if(window.location.hash != ""){
+    var hash = window.location.hash.split("=");
+    if(hash[0] == "#access_token"){
+      Fourmaps.token = hash[1];
+      $("#menu").show();
+      $("a:last").hide();
+    }
+  }
   $("#map_button").click(function(){
     Fourmaps.showMap();
     Fourmaps.calcRoute();
