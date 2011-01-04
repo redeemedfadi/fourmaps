@@ -11,6 +11,8 @@
   .tip{margin-bottom:5px;clear:both;}
   h3{margin-top:0;}
   #map_canvas,#table{display:none;}
+  table{border-collapse:collapse;}
+  td{vertical-align:top;border:1px solid gray;}
 </style>
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
@@ -18,7 +20,7 @@
 
 </head>
 <body>
-  <div>
+  <div id="menu">
     <label>From:  <input id="start" type="textbox" value="Atlanta, GA" /></label>
     <label>To:    <input id="end" type="textbox" value="Greenville, SC" /></label>
     <label>Venue: <input id="venue" type="textbox" value="Burger" /></label>
@@ -38,7 +40,7 @@
   </table>
 </div>
 
-<a href="https://foursquare.com/oauth2/authenticate?client_id=0Y432GMNCITEH3HUGBRHAGVHYKWGGNZ3CBEGOFOTIWSRHITK&response_type=token&redirect_uri=http://webfadi.com/fourmaps">Click to Login</a>
+<a id="redirect" http="https://foursquare.com/oauth2/authenticate?client_id=0Y432GMNCITEH3HUGBRHAGVHYKWGGNZ3CBEGOFOTIWSRHITK&response_type=token&redirect_uri=http://webfadi.com/fourmaps">Click to Login</a>
 </body>
 
 </html>

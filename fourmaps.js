@@ -17,10 +17,20 @@ var Fourmaps = {
       zoom:9,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
       center: atlanta
-    }
+    };
     this.map = new google.maps.Map(document.getElementById("map_canvas"), options);
     this.directionsDisplay.setMap(this.map);
     this.mapEnabled = true;
+  },
+
+  populateTable : function(){
+    var self = this;
+    for(var i=0;i<self.tableData.length;i++){
+      var item = self.tableData[i];
+      $("#table table tbody").append("<tr><td>" + item.venue
+       + "</td><td><img src='http://maps.google.com/maps/api/staticmap?sensor=false&zoom=12&size=128x128&markers=" + item.latlng + "' /><br /> " 
+       + item.latlng + "</td><td>" + item.tips + "</td></tr>")
+    };
   },
 
   calcRoute : function(){
@@ -53,13 +63,11 @@ var Fourmaps = {
     for(var j=0;j < this.markerArray.length;j++){
       var latlng = this.markerArray[j].wa + "," + this.markerArray[j].ya;
       var query = "?limit=1&llAcc=1000&query="+venue+"&ll="+latlng+"&oauth_token="+this.token;
-      console.log(url + query);
-      var index = j;
+      //console.log(url + query);
       $.ajax({
         url: url + query,
         dataType: 'jsonp',
         success: function(resp){
-          console.log(index);
           items = resp.response.groups[0].items
           for(var i=0;i < items.length; i++){
             var location = items[i].location;
@@ -69,25 +77,17 @@ var Fourmaps = {
                 map: self.map,
                 title: items[i].name
               });
-              self.loadTips(items[i],marker);
-            }else{
-              self.tableData.push({
-                venue : items[i].name, 
-                latlng : location.lat + "," + location.lng,
-                tips: self.loadTips(items[i],marker)
-              })
             }
+            self.loadTips(items[i],marker);
           };
         }
       });
-      console.log(self.tableData);
     };
   },
 
   loadTips : function(item,marker){
     var self = this;
     var url = "https://api.foursquare.com/v2/venues/"+item.id+"/tips?oauth_token="+this.token;
-    //console.log(url);
     $.ajax({
       url:url, 
       dataType:'jsonp',
@@ -107,8 +107,15 @@ var Fourmaps = {
             infowindow.open(self.map,marker);
           });
         }else{
-          console.log(text);
-          return text; 
+          self.tableData.push({
+            venue : item.name, 
+            latlng : item.location.lat + "," + item.location.lng,
+            tips: text
+          });
+          if(self.tableData.length == self.markerArray.length){
+            console.log(self.tableData.length);
+            self.populateTable();
+          }
         }
       }
     });
@@ -120,9 +127,11 @@ $(document).ready(function(){
   $("#map_button").click(function(){
     Fourmaps.showMap();
     Fourmaps.calcRoute();
+    $("#menu").hide();
   });
   $("#table_button").click(function(){
     $("#table").show();
     Fourmaps.calcRoute();
+    $("#menu").hide();
   });
 });
